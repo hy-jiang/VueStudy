@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>监听组件事件</title>
+    <script src="./vue.js"></script>
+</head>
+<body>
+    <div id="app" :style="{fontSize: fontSizes +'em'}">
+        <blog-post
+        v-for='post in postlist'
+        :key='post.id'
+        :post="post"
+        @enlarge-text='setSize'
+        ></blog-post>
+
+
+        <button
+            v-for="btn in buttons"
+            :key="btn.id"
+            @click="pageName = btn.name"
+            >{{btn.name}}
+
+        </button>
+        <keep-alive>
+            <component :is="pageName"> </component>
+        </keep-alive>
+        
+
+
+
+
+    <script>
+        Vue.component('one',{
+            template:`
+            <div>
+                <button
+                    v-for="post in posts"
+                    :key="post.id"
+                    @click="postcmp = post.content"
+                    >{{post.name}}
+
+                </button>
+                <keep-alive>
+                    <component :is="postcmp"> </component>
+                </keep-alive>
+            </div>
+            `,
+            data(){
+                return{
+                    postcmp:'a',
+                    posts:[
+                        {
+                            name:"a",
+                            content:{template:`<div>a</div>`},
+                            id:10,
+                        },
+                        {
+                            name:"b",
+                            content:{template:`<div>b</div>`},
+                            id:11,
+                        },
+                        {
+                            name:"c",
+                            content:{template:`<div>c</div>`},
+                            id:12,
+                        }
+                    ]
+                        
+                }
+            },
+            mounted(){
+                this.postcmp=this.posts[0].content;
+            }
+        })
+        Vue.component('two',{
+            template:`<div>more</div>`
+        })
+
+        Vue.component('blog-post',{
+            props:{
+                post:Object
+            },
+            template:  `
+                <div>
+                    <h3>{{post.tittl}}</h3>
+                    <div>{{post.content}}</div>
+                    <button @click="$emit('enlarge-text',0.2)">放大</button>
+                </div>
+            `
+        })
+        const vm = new Vue({
+            el:'#app',
+            data:{
+                pageName:'',
+                buttons:[
+                    {
+                        name:"one",
+                        id:50,
+                    },
+                    {
+                        name:"two",
+                        id:51,
+                    }
+                ],
+                fontSizes: 1,
+                postlist:[
+                    {
+                        tittl:"标题1",
+                        content:"内容1",
+                        id :1,
+                    },
+                    {
+                        tittl:"标题2",
+                        content:"内容2",
+                        id :2,
+                    },
+                    {
+                        tittl:"标题3",
+                        content:"内容3",
+                        id :3,
+                    },
+                ]
+            },
+            methods:{
+                setSize(e){
+                    this.fontSizes+=e;
+                }
+            }
+        })
+    </script>
+</body>
+</html>
